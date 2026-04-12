@@ -42,8 +42,8 @@ type GSA struct {
 }
 
 // newGSA parses the GSA sentence into this struct.
-func newGSA(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newGSA(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeGSA)
 	m := GSA{
 		BaseSentence: s,

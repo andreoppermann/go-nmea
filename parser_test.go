@@ -1,6 +1,7 @@
 package nmea
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -226,6 +227,42 @@ func TestParser(t *testing.T) {
 			},
 		},
 		{
+			name:     "Int64 empty field is MaxInt64 when MaxInt64ForEmptyInt is set",
+			fields:   []string{""},
+			expected: int64(math.MaxInt64),
+			parse: func(p *Parser) interface{} {
+				p.MaxInt64ForEmptyInt = true
+				return p.Int64(0, "context")
+			},
+		},
+		{
+			name:     "NullInt64 empty field returns MaxInt64 when MaxInt64ForEmptyInt is set",
+			fields:   []string{""},
+			expected: Int64{Value: math.MaxInt64, Valid: false},
+			parse: func(p *Parser) interface{} {
+				p.MaxInt64ForEmptyInt = true
+				return p.NullInt64(0, "context")
+			},
+		},
+		{
+			name:     "NullInt64 non-empty field unaffected by MaxInt64ForEmptyInt",
+			fields:   []string{"456"},
+			expected: Int64{Value: 456, Valid: true},
+			parse: func(p *Parser) interface{} {
+				p.MaxInt64ForEmptyInt = true
+				return p.NullInt64(0, "context")
+			},
+		},
+		{
+			name:     "NullInt64 zero value unaffected by MaxInt64ForEmptyInt",
+			fields:   []string{"0"},
+			expected: Int64{Value: 0, Valid: true},
+			parse: func(p *Parser) interface{} {
+				p.MaxInt64ForEmptyInt = true
+				return p.NullInt64(0, "context")
+			},
+		},
+		{
 			name:     "NullFloat64",
 			fields:   []string{"123.123"},
 			expected: Float64{Value: 123.123, Valid: true},
@@ -364,6 +401,45 @@ func TestParser(t *testing.T) {
 			parse: func(p *Parser) interface{} {
 				p.SetErr("context", "value")
 				return p.LatLong(0, 1, "context")
+			},
+		},
+		{
+			name:   "Float64 empty field is NaN when NaNForEmptyFloat is set",
+			fields: []string{""},
+			parse: func(p *Parser) interface{} {
+				p.NaNForEmptyFloat = true
+				v := p.Float64(0, "context")
+				assert.True(t, math.IsNaN(v))
+				return nil
+			},
+		},
+		{
+			name:   "NullFloat64 empty field returns NaN when NaNForEmptyFloat is set",
+			fields: []string{""},
+			parse: func(p *Parser) interface{} {
+				p.NaNForEmptyFloat = true
+				v := p.NullFloat64(0, "context")
+				assert.True(t, math.IsNaN(v.Value))
+				assert.False(t, v.Valid)
+				return nil
+			},
+		},
+		{
+			name:     "NullFloat64 non-empty field unaffected by NaNForEmptyFloat",
+			fields:   []string{"123.456"},
+			expected: Float64{Value: 123.456, Valid: true},
+			parse: func(p *Parser) interface{} {
+				p.NaNForEmptyFloat = true
+				return p.NullFloat64(0, "context")
+			},
+		},
+		{
+			name:     "NullFloat64 zero value unaffected by NaNForEmptyFloat",
+			fields:   []string{"0"},
+			expected: Float64{Value: 0, Valid: true},
+			parse: func(p *Parser) interface{} {
+				p.NaNForEmptyFloat = true
+				return p.NullFloat64(0, "context")
 			},
 		},
 		{

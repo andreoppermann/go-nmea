@@ -26,8 +26,8 @@ type TLBTarget struct {
 }
 
 // newTLB constructor
-func newTLB(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newTLB(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeTLB)
 	tlb := TLB{
 		BaseSentence: s,

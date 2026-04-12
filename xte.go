@@ -42,8 +42,8 @@ type XTE struct {
 }
 
 // newXTE constructor
-func newXTE(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newXTE(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeXTE)
 	xte := XTE{
 		BaseSentence:             s,

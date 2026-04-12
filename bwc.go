@@ -29,8 +29,8 @@ type BWC struct {
 }
 
 // newBWC constructor
-func newBWC(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newBWC(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeBWC)
 	bwc := BWC{
 		BaseSentence:              s,

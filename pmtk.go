@@ -29,8 +29,8 @@ type PMTK001 struct {
 }
 
 // newPMTK001 constructor
-func newPMTK001(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newPMTK001(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 
 	cmd := p.Int64(0, "command")
 	flag := p.Int64(1, "flag")

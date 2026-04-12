@@ -24,8 +24,8 @@ type DTM struct {
 }
 
 // newDTM constructor
-func newDTM(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newDTM(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeDTM)
 	m := DTM{
 		BaseSentence:      s,

@@ -19,8 +19,8 @@ type VHW struct {
 }
 
 // newVHW constructor
-func newVHW(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newVHW(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeVHW)
 	return VHW{
 		BaseSentence:           s,

@@ -1,6 +1,7 @@
 package nmea
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -44,4 +45,33 @@ func TestVHW(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestVHW_NaNForEmptyFloat(t *testing.T) {
+	// Test that SentenceParser with NaNForEmptyFloat returns NaN for empty float fields
+	p := SentenceParser{
+		NaNForEmptyFloat: true,
+	}
+
+	t.Run("partial sentence with NaN", func(t *testing.T) {
+		m, err := p.Parse("$INVHW,187.9,T,,,19.6,N,36.3,K*3E")
+		assert.NoError(t, err)
+		vhw := m.(VHW)
+
+		assert.Equal(t, 187.9, vhw.TrueHeading)
+		assert.True(t, math.IsNaN(vhw.MagneticHeading), "empty MagneticHeading should be NaN")
+		assert.Equal(t, 19.6, vhw.SpeedThroughWaterKnots)
+		assert.Equal(t, 36.3, vhw.SpeedThroughWaterKPH)
+	})
+
+	t.Run("full sentence unaffected", func(t *testing.T) {
+		m, err := p.Parse("$VWVHW,45.0,T,43.0,M,3.5,N,6.4,K*56")
+		assert.NoError(t, err)
+		vhw := m.(VHW)
+
+		assert.Equal(t, 45.0, vhw.TrueHeading)
+		assert.Equal(t, 43.0, vhw.MagneticHeading)
+		assert.Equal(t, 3.5, vhw.SpeedThroughWaterKnots)
+		assert.Equal(t, 6.4, vhw.SpeedThroughWaterKPH)
+	})
 }

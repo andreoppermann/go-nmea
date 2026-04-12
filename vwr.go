@@ -27,8 +27,8 @@ type VWR struct {
 }
 
 // newVWR constructor
-func newVWR(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newVWR(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeVWR)
 	return VWR{
 		BaseSentence:         s,

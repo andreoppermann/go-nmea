@@ -107,6 +107,32 @@ type SentenceParser struct {
 	// OnBaseSentence is a callback for accessing/modifying the base sentence
 	// before further parsing is done.
 	OnBaseSentence func(sentence *BaseSentence) error
+
+	// NaNForEmptyFloat when set to true makes the parser return math.NaN() as the value
+	// for empty float64 fields instead of 0. This allows distinguishing between a field
+	// that is empty/missing (NaN) and a field that has value 0.0.
+	// NullFloat64 will return Float64{Value: math.NaN(), Valid: false} for empty fields.
+	// Float64 (which returns NullFloat64.Value) will return math.NaN() for empty fields.
+	NaNForEmptyFloat bool
+
+	// MaxInt64ForEmptyInt when set to true makes the parser return math.MaxInt64 as the value
+	// for empty int64 fields instead of 0. This allows distinguishing between a field
+	// that is empty/missing (MaxInt64) and a field that has value 0.
+	// NullInt64 will return Int64{Value: math.MaxInt64, Valid: false} for empty fields.
+	// Int64 (which returns NullInt64.Value) will return math.MaxInt64 for empty fields.
+	MaxInt64ForEmptyInt bool
+}
+
+// parserOptions returns the ParserOption slice derived from the SentenceParser configuration.
+func (p *SentenceParser) parserOptions() []ParserOption {
+	var opts []ParserOption
+	if p.NaNForEmptyFloat {
+		opts = append(opts, WithNaNForEmptyFloat(true))
+	}
+	if p.MaxInt64ForEmptyInt {
+		opts = append(opts, WithMaxInt64ForEmptyInt(true))
+	}
+	return opts
 }
 
 func (p *SentenceParser) parseBaseSentence(raw string) (BaseSentence, error) {
@@ -228,7 +254,7 @@ var defaultSentenceParserMu = new(sync.Mutex)
 // to work as they did before SentenceParser was added.
 var defaultSentenceParser = SentenceParser{
 	CustomParsers: map[string]ParserFunc{
-		TypeMTK: newMTK, // for backwards compatibility support MTK. PMTK001 is correct an supported when using SentenceParser instance
+		TypeMTK: func(s BaseSentence) (Sentence, error) { return newMTK(s) }, // for backwards compatibility support MTK. PMTK001 is correct an supported when using SentenceParser instance
 	},
 }
 
@@ -279,186 +305,188 @@ func (p *SentenceParser) Parse(raw string) (Sentence, error) {
 		return parser(s)
 	}
 
+	opts := p.parserOptions()
+
 	if s.Raw[0] == SentenceStart[0] {
 		switch s.Type {
 		case TypeRMC:
-			return newRMC(s)
+			return newRMC(s, opts...)
 		case TypeAAM:
-			return newAAM(s)
+			return newAAM(s, opts...)
 		case TypeACK:
-			return newACK(s)
+			return newACK(s, opts...)
 		case TypeACN:
-			return newACN(s)
+			return newACN(s, opts...)
 		case TypeALA:
-			return newALA(s)
+			return newALA(s, opts...)
 		case TypeALC:
-			return newALC(s)
+			return newALC(s, opts...)
 		case TypeALF:
-			return newALF(s)
+			return newALF(s, opts...)
 		case TypeALR:
-			return newALR(s)
+			return newALR(s, opts...)
 		case TypeAPB:
-			return newAPB(s)
+			return newAPB(s, opts...)
 		case TypeARC:
-			return newARC(s)
+			return newARC(s, opts...)
 		case TypeBEC:
-			return newBEC(s)
+			return newBEC(s, opts...)
 		case TypeBOD:
-			return newBOD(s)
+			return newBOD(s, opts...)
 		case TypeBWC:
-			return newBWC(s)
+			return newBWC(s, opts...)
 		case TypeBWR:
-			return newBWR(s)
+			return newBWR(s, opts...)
 		case TypeBWW:
-			return newBWW(s)
+			return newBWW(s, opts...)
 		case TypeDOR:
-			return newDOR(s)
+			return newDOR(s, opts...)
 		case TypeDSC:
-			return newDSC(s)
+			return newDSC(s, opts...)
 		case TypeDSE:
-			return newDSE(s)
+			return newDSE(s, opts...)
 		case TypeDTM:
-			return newDTM(s)
+			return newDTM(s, opts...)
 		case TypeEVE:
-			return newEVE(s)
+			return newEVE(s, opts...)
 		case TypeFIR:
-			return newFIR(s)
+			return newFIR(s, opts...)
 		case TypeGGA:
-			return newGGA(s)
+			return newGGA(s, opts...)
 		case TypeGSA:
-			return newGSA(s)
+			return newGSA(s, opts...)
 		case TypeGLL:
-			return newGLL(s)
+			return newGLL(s, opts...)
 		case TypeVTG:
-			return newVTG(s)
+			return newVTG(s, opts...)
 		case TypeZDA:
-			return newZDA(s)
+			return newZDA(s, opts...)
 		case TypePGN:
-			return newPGN(s)
+			return newPGN(s, opts...)
 		case TypePCDIN:
-			return newPCDIN(s)
+			return newPCDIN(s, opts...)
 		case TypePGRME:
-			return newPGRME(s)
+			return newPGRME(s, opts...)
 		case TypePGRMT:
-			return newPGRMT(s)
+			return newPGRMT(s, opts...)
 		case TypePHTRO:
-			return newPHTRO(s)
+			return newPHTRO(s, opts...)
 		case TypePMTK001:
-			return newPMTK001(s)
+			return newPMTK001(s, opts...)
 		case TypePRDID:
-			return newPRDID(s)
+			return newPRDID(s, opts...)
 		case TypePSKPDPT:
-			return newPSKPDPT(s)
+			return newPSKPDPT(s, opts...)
 		case TypePSONCMS:
-			return newPSONCMS(s)
+			return newPSONCMS(s, opts...)
 		case TypeQuery:
-			return newQuery(s)
+			return newQuery(s, opts...)
 		case TypeGSV:
-			return newGSV(s)
+			return newGSV(s, opts...)
 		case TypeHBT:
-			return newHBT(s)
+			return newHBT(s, opts...)
 		case TypeHDG:
-			return newHDG(s)
+			return newHDG(s, opts...)
 		case TypeHDT:
-			return newHDT(s)
+			return newHDT(s, opts...)
 		case TypeHDM:
-			return newHDM(s)
+			return newHDM(s, opts...)
 		case TypeHSC:
-			return newHSC(s)
+			return newHSC(s, opts...)
 		case TypeGNS:
-			return newGNS(s)
+			return newGNS(s, opts...)
 		case TypeTHS:
-			return newTHS(s)
+			return newTHS(s, opts...)
 		case TypeTLB:
-			return newTLB(s)
+			return newTLB(s, opts...)
 		case TypeTLL:
-			return newTLL(s)
+			return newTLL(s, opts...)
 		case TypeTTM:
-			return newTTM(s)
+			return newTTM(s, opts...)
 		case TypeTXT:
-			return newTXT(s)
+			return newTXT(s, opts...)
 		case TypeWPL:
-			return newWPL(s)
+			return newWPL(s, opts...)
 		case TypeRMB:
-			return newRMB(s)
+			return newRMB(s, opts...)
 		case TypeRPM:
-			return newRPM(s)
+			return newRPM(s, opts...)
 		case TypeRSA:
-			return newRSA(s)
+			return newRSA(s, opts...)
 		case TypeRSD:
-			return newRSD(s)
+			return newRSD(s, opts...)
 		case TypeRTE:
-			return newRTE(s)
+			return newRTE(s, opts...)
 		case TypeROT:
-			return newROT(s)
+			return newROT(s, opts...)
 		case TypeVBW:
-			return newVBW(s)
+			return newVBW(s, opts...)
 		case TypeVDR:
-			return newVDR(s)
+			return newVDR(s, opts...)
 		case TypeVHW:
-			return newVHW(s)
+			return newVHW(s, opts...)
 		case TypeVSD:
-			return newVSD(s)
+			return newVSD(s, opts...)
 		case TypeVPW:
-			return newVPW(s)
+			return newVPW(s, opts...)
 		case TypeVLW:
-			return newVLW(s)
+			return newVLW(s, opts...)
 		case TypeVWR:
-			return newVWR(s)
+			return newVWR(s, opts...)
 		case TypeVWT:
-			return newVWT(s)
+			return newVWT(s, opts...)
 		case TypeDPT:
-			return newDPT(s)
+			return newDPT(s, opts...)
 		case TypeDBT:
-			return newDBT(s)
+			return newDBT(s, opts...)
 		case TypeDBK:
-			return newDBK(s)
+			return newDBK(s, opts...)
 		case TypeDBS:
-			return newDBS(s)
+			return newDBS(s, opts...)
 		case TypeMDA:
-			return newMDA(s)
+			return newMDA(s, opts...)
 		case TypeMTA:
-			return newMTA(s)
+			return newMTA(s, opts...)
 		case TypeMTW:
-			return newMTW(s)
+			return newMTW(s, opts...)
 		case TypeMWD:
-			return newMWD(s)
+			return newMWD(s, opts...)
 		case TypeMWV:
-			return newMWV(s)
+			return newMWV(s, opts...)
 		case TypeOSD:
-			return newOSD(s)
+			return newOSD(s, opts...)
 		case TypeXDR:
-			return newXDR(s)
+			return newXDR(s, opts...)
 		case TypeXTE:
-			return newXTE(s)
+			return newXTE(s, opts...)
 		case TypePKLID:
-			return newPKLID(s)
+			return newPKLID(s, opts...)
 		case TypePKNID:
-			return newPKNID(s)
+			return newPKNID(s, opts...)
 		case TypePKLSH:
-			return newPKLSH(s)
+			return newPKLSH(s, opts...)
 		case TypePKNSH:
-			return newPKNSH(s)
+			return newPKNSH(s, opts...)
 		case TypePKLDS:
-			return newPKLDS(s)
+			return newPKLDS(s, opts...)
 		case TypePKNDS:
-			return newPKNDS(s)
+			return newPKNDS(s, opts...)
 		case TypePKWDWPL:
-			return newPKWDWPL(s)
+			return newPKWDWPL(s, opts...)
 		case TypePASHR:
-			return newPASHR(s)
+			return newPASHR(s, opts...)
 		}
 	}
 	if s.Raw[0] == SentenceStartEncapsulated[0] {
 		switch s.Type {
 		case TypeABM:
-			return newABM(s)
+			return newABM(s, opts...)
 		case TypeBBM:
-			return newBBM(s)
+			return newBBM(s, opts...)
 		case TypeTTD:
-			return newTTD(s)
+			return newTTD(s, opts...)
 		case TypeVDM, TypeVDO:
-			return newVDMVDO(s)
+			return newVDMVDO(s, opts...)
 		}
 	}
 	return nil, &NotSupportedError{Prefix: s.Prefix()}

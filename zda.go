@@ -22,8 +22,8 @@ type ZDA struct {
 }
 
 // newZDA constructor
-func newZDA(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newZDA(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeZDA)
 	return ZDA{
 		BaseSentence:  s,

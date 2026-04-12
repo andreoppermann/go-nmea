@@ -19,8 +19,8 @@ type HDM struct {
 }
 
 // newHDM constructor
-func newHDM(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newHDM(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeHDM)
 	m := HDM{
 		BaseSentence:  s,

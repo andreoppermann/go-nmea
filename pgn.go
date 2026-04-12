@@ -26,8 +26,8 @@ type PGN struct {
 }
 
 // newPGN constructor
-func newPGN(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newPGN(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypePGN)
 
 	if len(p.Fields) != 3 {

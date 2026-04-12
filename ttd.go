@@ -24,8 +24,8 @@ type TTD struct {
 }
 
 // newTTD constructor
-func newTTD(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newTTD(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeTTD)
 	m := TTD{
 		BaseSentence:   s,

@@ -68,8 +68,8 @@ type VSD struct {
 }
 
 // newVSD constructor
-func newVSD(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newVSD(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeVSD)
 	m := VSD{
 		BaseSentence:          s,

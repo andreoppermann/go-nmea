@@ -70,8 +70,8 @@ type ALF struct {
 }
 
 // newALF constructor
-func newALF(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newALF(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeALF)
 	return ALF{
 		BaseSentence:             s,

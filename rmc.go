@@ -34,8 +34,8 @@ type RMC struct {
 }
 
 // newRMC constructor
-func newRMC(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newRMC(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeRMC)
 	m := RMC{
 		BaseSentence: s,

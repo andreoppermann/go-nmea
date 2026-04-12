@@ -24,8 +24,8 @@ type BOD struct {
 }
 
 // newBOD constructor
-func newBOD(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newBOD(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeBOD)
 	bod := BOD{
 		BaseSentence:          s,

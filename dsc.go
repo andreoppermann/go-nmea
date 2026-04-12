@@ -105,8 +105,8 @@ type DSC struct {
 }
 
 // newDSC constructor
-func newDSC(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newDSC(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeDSC)
 	return DSC{
 		BaseSentence:                s,

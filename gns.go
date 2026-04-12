@@ -59,8 +59,8 @@ type GNS struct {
 }
 
 // newGNS Constructor
-func newGNS(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newGNS(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeGNS)
 	m := GNS{
 		BaseSentence: s,

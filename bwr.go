@@ -28,8 +28,8 @@ type BWR struct {
 }
 
 // newBWR constructor
-func newBWR(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newBWR(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeBWR)
 	bwc := BWR{
 		BaseSentence:              s,

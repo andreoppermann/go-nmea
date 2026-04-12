@@ -27,8 +27,8 @@ type PHTRO struct {
 }
 
 // newPHTRO constructor
-func newPHTRO(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newPHTRO(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypePHTRO)
 	m := PHTRO{
 		BaseSentence: s,

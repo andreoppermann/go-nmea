@@ -41,8 +41,8 @@ type RSD struct {
 }
 
 // newRSD constructor
-func newRSD(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newRSD(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeRSD)
 	return RSD{
 		BaseSentence:         s,

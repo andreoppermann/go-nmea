@@ -19,8 +19,8 @@ type DPT struct {
 }
 
 // newDPT constructor
-func newDPT(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newDPT(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeDPT)
 	dpt := DPT{
 		BaseSentence: s,

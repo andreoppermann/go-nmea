@@ -19,8 +19,8 @@ type PKLID struct {
 }
 
 // newPKLID constructor
-func newPKLID(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newPKLID(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypePKLID)
 
 	return PKLID{

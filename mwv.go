@@ -61,8 +61,8 @@ type MWV struct {
 	StatusValid   bool
 }
 
-func newMWV(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newMWV(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeMWV)
 	return MWV{
 		BaseSentence:  s,

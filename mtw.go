@@ -19,8 +19,8 @@ type MTW struct {
 }
 
 // newMTW constructor
-func newMTW(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newMTW(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeMTW)
 	return MTW{
 		BaseSentence: s,

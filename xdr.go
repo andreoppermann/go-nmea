@@ -102,8 +102,8 @@ type XDRMeasurement struct {
 }
 
 // newXDR constructor
-func newXDR(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newXDR(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeXDR)
 
 	xdr := XDR{

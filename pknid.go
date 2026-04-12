@@ -18,8 +18,8 @@ type PKNID struct {
 }
 
 // newPKNID constructor
-func newPKNID(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newPKNID(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypePKNID)
 
 	return PKNID{

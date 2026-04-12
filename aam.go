@@ -35,8 +35,8 @@ type AAM struct {
 }
 
 // newAAM constructor
-func newAAM(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newAAM(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeAAM)
 	return AAM{
 		BaseSentence:               s,

@@ -18,8 +18,8 @@ type PRDID struct {
 }
 
 // newPRDID constructor
-func newPRDID(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newPRDID(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypePRDID)
 	m := PRDID{
 		BaseSentence: s,

@@ -24,8 +24,8 @@ type VTG struct {
 
 // newVTG parses the VTG sentence into this struct.
 // e.g: $GPVTG,360.0,T,348.7,M,000.0,N,000.0,K*43
-func newVTG(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newVTG(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeVTG)
 	vtg := VTG{
 		BaseSentence:     s,

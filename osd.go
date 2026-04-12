@@ -68,8 +68,8 @@ type OSD struct {
 }
 
 // newOSD constructor
-func newOSD(s BaseSentence) (Sentence, error) {
-	p := NewParser(s)
+func newOSD(s BaseSentence, opts ...ParserOption) (Sentence, error) {
+	p := NewParser(s, opts...)
 	p.AssertType(TypeOSD)
 	m := OSD{
 		BaseSentence:     s,
