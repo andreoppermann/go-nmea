@@ -32,12 +32,12 @@ type GSA struct {
 	HDOP    float64  // Horizontal dilution of precision.
 	VDOP    float64  // Vertical dilution of precision.
 	// SystemID is (GNSS) System ID (NMEA 4.1+)
-	// 1 - GPS
-	// 2 - GLONASS
-	// 3 - Galileo
-	// 4 - BeiDou
-	// 5 - QZSS
-	// 6 - NavID (IRNSS)
+	// 1 - GP - GPS (US)
+	// 2 - GL - GLONASS (RU)
+	// 3 - GA - Galileo (EU)
+	// 4 - GB/BD BeiDou (CN)
+	// 5 - GQ - QZSS (JP)
+	// 6 - GI - NavIC / IRNSS (IN)
 	SystemID int64
 }
 
@@ -62,7 +62,7 @@ func newGSA(s BaseSentence, opts ...ParserOption) (Sentence, error) {
 	m.VDOP = p.Float64(16, "vdop")
 
 	if len(p.Fields) > 17 {
-		m.SystemID = p.Int64(17, "system ID")
+		m.SystemID = p.HexInt64(17, "system ID") // Encoded in hex
 	}
 	return m, p.Err()
 }
