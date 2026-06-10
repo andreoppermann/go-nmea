@@ -8,6 +8,8 @@ const (
 // GSV represents the GPS Satellites in view
 // http://aprs.gids.nl/nmea/#glgsv
 // https://gpsd.gitlab.io/gpsd/NMEA.html#_gsv_satellites_in_view
+// See NMEA ERRATA # 0183 20190515 GSV Sentence:
+// https://web.nmea.org/External/WCPages/WCWebContent/webcontentpage.aspx?ContentID=258
 //
 // Format:              $--GSV,x,x,x,x,x,x,x,...*hh<CR><LF>
 // Format (NMEA 4.1+):  $--GSV,x,x,x,x,x,x,x,...,x*hh<CR><LF>
@@ -19,22 +21,18 @@ type GSV struct {
 	MessageNumber   int64     // Message number
 	NumberSVsInView int64     // Total number of SVs in view
 	Info            []GSVInfo // visible satellite info (0-4 of these)
-	// SystemID is (GNSS) System ID (NMEA 4.1+)
-	// 1 - GPS
-	// 2 - GLONASS
-	// 3 - Galileo
-	// 4 - BeiDou
-	// 5 - QZSS
-	// 6 - NavID (IRNSS)
-	SystemID int64
+	SignalID        int64     // GNSS frequency (NMEA 4.1+)
+	SystemID        int64     // Deprecated: Compatibility with go-nmea <= v1.10.0
 }
 
 // GSVInfo represents information about a visible satellite
 type GSVInfo struct {
-	SVPRNNumber int64 // SV PRN number, pseudo-random noise or gold code
-	Elevation   int64 // Elevation in degrees, 90 maximum
-	Azimuth     int64 // Azimuth, degrees from true north, 000 to 359
-	SNR         int64 // SNR, 00-99 dB (null when not tracking)
+	SVPRNNumber int64  // SV PRN number, pseudo-random noise or gold code
+	Elevation   int64  // Elevation in degrees, 90 maximum
+	Azimuth     int64  // Azimuth, degrees from true north, 000 to 359
+	SNR         int64  // SNR, 00-99 dB (null when not tracking)
+	TalkerID    string // Context for the SignalID
+	SignalID    int64  // GNSS frequency (NMEA 4.1+)
 }
 
 // newGSV constructor
@@ -47,6 +45,10 @@ func newGSV(s BaseSentence, opts ...ParserOption) (Sentence, error) {
 		MessageNumber:   p.Int64(1, "message number"),
 		NumberSVsInView: p.Int64(2, "number of SVs in view"),
 	}
+	if (len(m.Fields)-3)%4 == 1 {
+		m.SignalID = p.HexInt64(len(m.Fields)-1, "signal ID")
+		m.SystemID = m.SignalID // Compatibility with go-nmea <= v1.10.0
+	}
 	i := 0
 	for ; i < 4; i++ {
 		if 6+i*4 >= len(m.Fields) {
@@ -57,11 +59,9 @@ func newGSV(s BaseSentence, opts ...ParserOption) (Sentence, error) {
 			Elevation:   p.Int64(4+i*4, "elevation"),
 			Azimuth:     p.Int64(5+i*4, "azimuth"),
 			SNR:         p.Int64(6+i*4, "SNR"),
+			SignalID:    m.SignalID,
+			TalkerID:    p.Talker,
 		})
-	}
-	idxSID := (6 + (i-1)*4) + 1
-	if len(p.Fields) == idxSID+1 {
-		m.SystemID = p.Int64(idxSID, "system ID")
 	}
 	return m, p.Err()
 }
